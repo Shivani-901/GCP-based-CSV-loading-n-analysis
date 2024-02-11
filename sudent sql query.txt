@@ -1,0 +1,124 @@
+//Simple Query - Select all columns from the student table://
+
+SELECT * FROM `your_project_id.your_dataset_id.student`;
+
+
+
+// Filtering and Sorting - Select female students with a GPA above 3.5, ordered by GPA in descending order//
+
+SELECT * FROM `your_project_id.your_dataset_id.student`
+WHERE gender = 'female' AND gpa > 3.5
+ORDER BY gpa DESC;
+
+
+
+//Aggregation - Calculate the average GPA for male and female students://
+
+SELECT gender, AVG(gpa) AS avg_gpa
+FROM `your_project_id.your_dataset_id.student`
+GROUP BY gender;
+
+
+
+//Joining Tables - If you have another table 'courses' with student_id as a foreign key://
+
+SELECT s.student_id, s.name, c.course_name
+FROM `your_project_id.your_dataset_id.student` s
+JOIN `your_project_id.your_dataset_id.courses` c
+ON s.student_id = c.student_id;
+
+
+
+//Subqueries - Find students with a GPA above the average GPA://
+
+SELECT *
+FROM `your_project_id.your_dataset_id.student`
+WHERE gpa > (SELECT AVG(gpa) FROM `your_project_id.your_dataset_id.student`);
+
+
+
+//Window Functions - Rank students based on GPA within each gender://
+
+SELECT
+  student_id,
+  name,
+  gender,
+  gpa,
+  RANK() OVER (PARTITION BY gender ORDER BY gpa DESC) AS gpa_rank
+FROM `your_project_id.your_dataset_id.student`;
+
+
+
+//Count and Group - Count the number of students in each grade://
+
+SELECT grade, COUNT(*) AS student_count
+FROM `your_project_id.your_dataset_id.student`
+GROUP BY grade;
+
+
+
+//Date Functions - Calculate the age of each student based on their birthdate//
+
+SELECT
+  name,
+  birthdate,
+  DATE_DIFF(CURRENT_DATE(), DATE(birthdate), YEAR) AS age
+FROM `your_project_id.your_dataset_id.student`;
+
+
+
+//Case Statements - Classify students into 'High Achiever' or 'Average' based on GPA://
+
+SELECT
+  name,
+  gpa,
+  CASE
+    WHEN gpa >= 4.0 THEN 'High Achiever'
+    ELSE 'Average'
+  END AS achievement_status
+FROM `your_project_id.your_dataset_id.student`;
+
+
+
+//Aggregate and Sort - List the top 3 average GPAs by department://
+
+SELECT department, AVG(gpa) AS avg_gpa
+FROM `your_project_id.your_dataset_id.student`
+GROUP BY department
+ORDER BY avg_gpa DESC
+LIMIT 3;
+
+
+
+//Nested Query - Find students who took the most courses//
+
+SELECT *
+FROM `your_project_id.your_dataset_id.student`
+WHERE student_id = (
+  SELECT student_id
+  FROM `your_project_id.your_dataset_id.courses`
+  GROUP BY student_id
+  ORDER BY COUNT(*) DESC
+  LIMIT 1
+);
+
+
+//Conditional Aggregation - Calculate the average GPA for each gender, excluding students with a grade below 'B'//
+
+SELECT gender, AVG(gpa) AS avg_gpa
+FROM `your_project_id.your_dataset_id.student`
+WHERE grade >= 'B'
+GROUP BY gender;
+
+
+
+
+//Time Window - Find the students who joined within the last year//
+
+SELECT *
+FROM `your_project_id.your_dataset_id.student`
+WHERE join_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 YEAR);
+
+
+
+
